@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc7</artifactId>
-			<version>11.2.0</version>
+			<version>11.2.0.3.0</version>
 		</dependency>
 
 <!-- Dev tools is simply a tool for development 
