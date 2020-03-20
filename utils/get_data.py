@@ -43,11 +43,32 @@ def generate_data_nested_dirs(rootdir:str='.') -> np.array:
     for item, spacing in mygen:
         yield item, spacing
 
-# def get_cube_at_point(source:np.array, zxy_spacing:tuple, mm_x:float, mm_y:float, mm_z:float, mm_sidelength:float) -> np.array:
-#     spacing_z, spacing_x, spacing_y = *zxy_spacing
-#     vox_center_x, vox_center_y, vox_center_z = mm_x / spacing_x, mm_y / spacing_y, mm_z / spacing_z
-#     vox_side_z, vox_side_x, vox_side_y = *[ mm_sidelength / spacing for spacing in zxy_spacing]
-#     vox_corner_x, vox_corner_y, vox_corner_z = 
+def get_cube_at_point(source:np.array, zxy_spacing:tuple, mm_x:float, mm_y:float, mm_z:float, mm_sidelength:float) -> np.array:
+    spacing_z, spacing_x, spacing_y = zxy_spacing
+    vox_center_x, vox_center_y, vox_center_z = int(mm_x / spacing_x), int(mm_y / spacing_y), int(mm_z / spacing_z)
+    vox_r_edge_z, vox_r_edge_x, vox_r_edge_y = [ int((mm_sidelength / spacing) / 2 + 1) for spacing in zxy_spacing]
+    print(vox_r_edge_z, vox_r_edge_x, vox_r_edge_y)
+    vox_corner_x = vox_center_x - vox_r_edge_x
+    vox_corner_y = vox_center_y - vox_r_edge_y
+    vox_corner_z = vox_center_z - vox_r_edge_z
+
+    cube = {
+        "x_start":vox_corner_x,
+        "x_end":vox_corner_x + vox_r_edge_x * 2,
+        "y_start":vox_corner_x,
+        "y_end":vox_corner_y + vox_r_edge_y * 2,
+        "z_start":vox_corner_z,
+        "z_end":vox_corner_z + vox_r_edge_z * 2,
+    }
+ 
+    cube_array = source[
+        cube['z_start']:cube['z_end'],
+        cube['x_start']:cube['x_end'],
+        cube['y_start']:cube['y_end'],
+    ]
+
+    return cube_array
+    
 
 
 if __name__ == "__main__":
@@ -55,3 +76,4 @@ if __name__ == "__main__":
     array, spacing = next(mygen)
     print(array.shape)
     print(spacing)
+    print(get_cube_at_point(array,spacing,5,5,5,2))
