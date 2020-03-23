@@ -47,22 +47,23 @@ def generate_data_nested_dirs(rootdir:str='.') -> np.array:
         yield item
 
 
-def get_cube_at_point(source:np.array, zxy_spacing:tuple, xyz_coords:tuple, mm_sidelength:float) -> np.array:
-    spacing_z, spacing_x, spacing_y = zxy_spacing
-    mm_x, mm_y, mm_z = xyz_coords
-    vox_center_x, vox_center_y, vox_center_z = int(mm_x / spacing_x), int(mm_y / spacing_y), int(mm_z / spacing_z)
-    vox_r_edge_z, vox_r_edge_x, vox_r_edge_y = [ int((mm_sidelength / spacing) / 2 + 1) for spacing in zxy_spacing]
-    vox_corner_x = vox_center_x - vox_r_edge_x
-    vox_corner_y = vox_center_y - vox_r_edge_y
-    vox_corner_z = vox_center_z - vox_r_edge_z
+def get_cube_at_point(source:np.array, zxy_spacing:tuple, zxy_coords:tuple, mm_sidelength:float) -> np.array:
+    zxy_vox_coords = tuple(int(ele1 // ele2) for ele1, ele2 in zip(zxy_coords,zxy_spacing))
+    # vox_center_z, vox_center_x, vox_center_y = int(mm_z / spacing_z), int(mm_x / spacing_x), int(mm_y / spacing_y)
+    zxy_r_edges = tuple(int(mm_sidelength * 2 / spacing) for spacing in zxy_spacing)
+    zxy_corner = tuple(ele1 - ele2 for ele1, ele2 in zip(zxy_vox_coords, zxy_r_edges))
+
+    # print(zxy_vox_coords)
+    # print(zxy_corner)
+    # print(zxy_r_edges)
 
     cube = {
-        "x_start":vox_corner_x,
-        "x_end":vox_corner_x + vox_r_edge_x * 2,
-        "y_start":vox_corner_x,
-        "y_end":vox_corner_y + vox_r_edge_y * 2,
-        "z_start":vox_corner_z,
-        "z_end":vox_corner_z + vox_r_edge_z * 2,
+        "z_start":zxy_corner[0],
+        "z_end":zxy_corner[0] + zxy_r_edges[0] * 2 + 1,
+        "x_start":zxy_corner[1],
+        "x_end":zxy_corner[1] + zxy_r_edges[1] * 2 + 1,
+        "y_start":zxy_corner[2],
+        "y_end":zxy_corner[2] + zxy_r_edges[2] * 2 + 1,
     }
  
     cube_array = source[
@@ -78,8 +79,10 @@ def get_cube_at_point(source:np.array, zxy_spacing:tuple, xyz_coords:tuple, mm_s
 if __name__ == "__main__":
     mygen = generate_data_nested_dirs('.')
     array, spacing, origin, filename = next(mygen)
+    cube = get_cube_at_point(array,spacing,(5,5,5),2)
     print(f'\nShape: {array.shape}')
     print(f'\nSpacing: {spacing}')
     print(f'\nOrigin: {origin}')
     print(f'\nFilename: {filename}')
-    print(f'\nCube at 5,5,5 with 2mm edge length:\n{get_cube_at_point(array,spacing,(5,5,5),2)}')
+    print(f'\nCube at 5,5,5 with 2mm edge length:\n{cube}')
+    print(f'\n\nCube Shape: {cube.shape}')
