@@ -2,7 +2,7 @@
 This module provides generators to generate arrays for CT scans in directories
 '''
 from SimpleITK import ReadImage, GetArrayFromImage, sitkFloat32
-import numpy as np
+import numpy as np, pandas as pd
 import os
 
 def generate_data_same_dir(dirname:str='.') -> tuple:
@@ -73,6 +73,9 @@ def get_cube_at_point(source:np.array, zxy_spacing:tuple, zxy_coords:tuple, mm_s
     ]
 
     return cube_array
+
+    def generate_true_cubes(locations:pd.DataFrame, root_dir:str='.'):
+        scans = generate_data_nested_dirs(root_dir)
     
 
 
