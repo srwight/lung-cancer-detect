@@ -47,15 +47,10 @@ def generate_data_nested_dirs(rootdir:str='.') -> np.array:
         yield item
 
 
-def get_cube_at_point(source:np.array, zxy_spacing:tuple, zxy_coords:tuple, mm_sidelength:float) -> np.array:
-    zxy_vox_coords = tuple(int(ele1 // ele2) for ele1, ele2 in zip(zxy_coords,zxy_spacing))
-    # vox_center_z, vox_center_x, vox_center_y = int(mm_z / spacing_z), int(mm_x / spacing_x), int(mm_y / spacing_y)
+def get_cube_at_point(source:np.array, zxy_spacing:tuple, zxy_origin:tuple, filename, zxy_coords:tuple, mm_sidelength:float) -> np.array:
+    zxy_vox_coords = tuple(int((ele1 - ele3)/ele2) for ele1, ele2, ele3 in zip(zxy_coords,zxy_spacing, zxy_origin))
     zxy_r_edges = tuple(int(mm_sidelength * 2 / spacing) for spacing in zxy_spacing)
     zxy_corner = tuple(ele1 - ele2 for ele1, ele2 in zip(zxy_vox_coords, zxy_r_edges))
-
-    # print(zxy_vox_coords)
-    # print(zxy_corner)
-    # print(zxy_r_edges)
 
     cube = {
         "z_start":zxy_corner[0],
@@ -74,18 +69,26 @@ def get_cube_at_point(source:np.array, zxy_spacing:tuple, zxy_coords:tuple, mm_s
 
     return cube_array
 
-    def generate_true_cubes(locations:pd.DataFrame, root_dir:str='.'):
-        scans = generate_data_nested_dirs(root_dir)
+def generate_true_cubes( \
+    locations:pd.DataFrame, \
+    headers:tuple = ('seriesuid','coordX','coordY','coordZ','diameter_mm'), \
+    root_dir:str = '.'):
     
-
+    scans = generate_data_nested_dirs(root_dir)
+    for scan in scans:
+        df_scan = locations.loc[locations[headers[0]] == scan[-1]]
+        for annotation in df_scan.iterrows():
+            zxy_coords = (annotation[1][headers[3]], annotation[1][headers[1]], annotation[1][headers[2]])
+            diameter = annotation[1][headers[4]]
+            yield get_cube_at_point(*scan, zxy_coords, diameter)
 
 if __name__ == "__main__":
     mygen = generate_data_nested_dirs('.')
-    array, spacing, origin, filename = next(mygen)
-    cube = get_cube_at_point(array,spacing,(5,5,5),2)
-    print(f'\nShape: {array.shape}')
-    print(f'\nSpacing: {spacing}')
-    print(f'\nOrigin: {origin}')
-    print(f'\nFilename: {filename}')
+    scan = next(mygen)
+    cube = get_cube_at_point(*scan,(5,5,5),2)
+    print(f'\nShape: {scan[0].shape}')
+    print(f'\nSpacing: {scan[1]}')
+    print(f'\nOrigin: {scan[2]}')
+    print(f'\nFilename: {scan[3]}')
     print(f'\nCube at 5,5,5 with 2mm edge length:\n{cube}')
     print(f'\n\nCube Shape: {cube.shape}')
