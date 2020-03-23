@@ -50,7 +50,7 @@ def generate_data_nested_dirs(rootdir:str='.') -> np.array:
 def get_cube_at_point(source:np.array, zxy_spacing:tuple, zxy_origin:tuple, filename, zxy_coords:tuple, mm_sidelength:float) -> np.array:
     zxy_vox_coords = tuple(int((ele1 - ele3)/ele2) for ele1, ele2, ele3 in zip(zxy_coords,zxy_spacing, zxy_origin))
     zxy_r_edges = tuple(int(mm_sidelength * 2 / spacing) for spacing in zxy_spacing)
-    zxy_corner = tuple(ele1 - ele2 for ele1, ele2 in zip(zxy_vox_coords, zxy_r_edges))
+    zxy_corner = tuple((ele1 - ele2 if ele1 > ele2 else 0) for ele1, ele2 in zip(zxy_vox_coords, zxy_r_edges))
 
     cube = {
         "z_start":zxy_corner[0],
@@ -73,14 +73,14 @@ def generate_true_cubes( \
     locations:pd.DataFrame, \
     headers:tuple = ('seriesuid','coordX','coordY','coordZ','diameter_mm'), \
     root_dir:str = '.'):
+    max_diameter = locations[headers[4]].max()
     
     scans = generate_data_nested_dirs(root_dir)
     for scan in scans:
         df_scan = locations.loc[locations[headers[0]] == scan[-1]]
         for annotation in df_scan.iterrows():
             zxy_coords = (annotation[1][headers[3]], annotation[1][headers[1]], annotation[1][headers[2]])
-            diameter = annotation[1][headers[4]]
-            yield get_cube_at_point(*scan, zxy_coords, diameter)
+            yield get_cube_at_point(*scan, zxy_coords, max_diameter)
 
 if __name__ == "__main__":
     mygen = generate_data_nested_dirs('.')
