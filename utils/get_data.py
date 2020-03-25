@@ -156,14 +156,14 @@ def generate_cubes( \
                 max_diameter, 
                 target_size)
             nodule += 1
-            yield cube, True
+            yield cube, 1
             cancer = True
         if not cancer:
             clean_files.append(path)
             while nodule - no_nodule > 0:
                 cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter),0)
                 no_nodule += 1
-                yield cube, False
+                yield cube, 0
     if not clean_files:
         warnings.warn('There are no clean scans. Data is not balanced.')
     clean_scans = infinite_looper(clean_files)
@@ -172,7 +172,7 @@ def generate_cubes( \
 
         # This line gets a random cube from the scan, then adds a dimension.
         cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter), 0)
-        yield cube, False
+        yield cube, 0
 
 def generate_cube_batch(
     locations:pd.DataFrame, \
@@ -190,7 +190,6 @@ def generate_cube_batch(
             continue
         yield np.stack(batch_list)
         batch_list = []
-)
 
 if __name__ == "__main__":
     mygen = generate_data_nested_dirs('.')
