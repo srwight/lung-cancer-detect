@@ -145,7 +145,8 @@ def get_random_cube(scan:tuple, target_size:tuple, diameter:float):
     '''
     
     source, zyx_spacing, zyx_origin = scan[0:3]
-    zyx_vox_coords = tuple(randint(30,x-30) for x in source.shape)
+    random_buffer = (40,100,100)
+    zyx_vox_coords = tuple(randint(buff,shape-40) for buff, shape in zip(random_buffer, source.shape))
     zyx_mm_coords = tuple(coord * spacing + origin for spacing, origin, coord in zip(zyx_spacing, zyx_origin, zyx_vox_coords))
     cube = get_cube_at_point(
         scan, 
