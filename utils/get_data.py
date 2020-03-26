@@ -145,23 +145,25 @@ def generate_cubes( \
     clean_files = []
     for scan in scans:
         filename = scan[-1].rsplit('/',1)[1][:-4]
-        path = scan[-2]
+        path = scan[-1]
         cancer = False
         df_scan = locations.loc[locations[headers[0]] == filename]
         for annotation in df_scan.iterrows():
             zyx_coords = tuple(annotation[1][coord] for coord in headers[3:0:-1])
-            cube = get_cube_at_point(
-                scan, 
-                zyx_coords, 
-                max_diameter, 
-                target_size)
+            cube = np.expand_dims(
+                get_cube_at_point(
+                    scan, 
+                    zyx_coords, 
+                    max_diameter, 
+                    target_size),
+                3)
             nodule += 1
             yield cube, 1
             cancer = True
         if not cancer:
             clean_files.append(path)
             while nodule - no_nodule > 0:
-                cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter),0)
+                cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter),3)
                 no_nodule += 1
                 yield cube, 0
     if not clean_files:
@@ -169,9 +171,9 @@ def generate_cubes( \
     clean_scans = infinite_looper(clean_files)
     while nodule - no_nodule > 0:
         scan = scan_from_file(next(clean_scans))
-
+        no_nodule += 1
         # This line gets a random cube from the scan, then adds a dimension.
-        cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter), 0)
+        cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter), 3)
         yield cube, 0
 
 def generate_cube_batch(
@@ -184,12 +186,15 @@ def generate_cube_batch(
     cubes = generate_cubes(locations, target_size, headers, root_dir)
 
     batch_list = []
+    y_list=[]
     for cube in cubes:
         if len(batch_list) < batch_size:
-            batch_list.append(cube)
+            batch_list.append(cube[0])
+            y_list.append(cube[1])
             continue
-        yield np.stack(batch_list)
+        yield np.stack(batch_list), np.stack(y_list)
         batch_list = []
+        y_list = []
 
 if __name__ == "__main__":
     mygen = generate_data_nested_dirs('.')
