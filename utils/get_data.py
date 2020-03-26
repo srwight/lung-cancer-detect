@@ -5,7 +5,15 @@ from SimpleITK import ReadImage, GetArrayFromImage, sitkFloat32, sitkInt16
 from scipy import ndimage
 import numpy as np, pandas as pd
 import os, warnings
-from random import randint
+from random import randint, random
+
+def infinite_loop(genfunc):
+    def looped_generator(*args, **kwargs):
+        while True:
+            generator = genfunc(*args, **kwargs)
+            for item in generator:
+                yield item
+    return looped_generator
 
 def infinite_looper(iterable):
     while True:
@@ -65,13 +73,19 @@ def get_cube_at_point(
     scan,
     zyx_coords:tuple,
     mm_sidelength:float,
-    target_size) -> np.array:
+    target_size,
+    rotate:float = 0,
+    axes:list = [],
+    offset:float = 0) -> np.array:
     
     source, zyx_spacing, zyx_origin = scan[0:3]
-
+    if offset:
+        placement = 1 + offset * randint(-1,1) * random()
+    else:
+        placement = 1
     # Convert mm coordinates to voxel coordinates
     zyx_vox_coords = tuple(
-        int((coord - origin)/spacing) \
+        int((coord - origin)/spacing * placement) \
             for \
                 coord, \
                 spacing, \
@@ -109,6 +123,14 @@ def get_cube_at_point(
         cube['x_start']:cube['x_end'],
     ]
 
+    if rotate:
+        degrees = rotate * random()
+        for axis in axes:
+            if axis not in (0,1,2):
+                raise IndexError('Invalid Axis')
+            rotation_axes = tuple(filter (lambda a: a != axis, [0,1,2]))
+            cube_array = ndimage.rotate(cube_array, degrees, rotation_axes)
+
     # When we zoom the cube to the target size, we'll use these values to do so.
     scaler = tuple(target / current for target, current in zip(target_size, cube_array.shape))
 
@@ -132,11 +154,13 @@ def get_random_cube(scan:tuple, target_size:tuple, diameter:float):
         target_size)
     return cube
 
+@infinite_loop
 def generate_cubes( \
     locations:pd.DataFrame, \
     target_size:tuple, \
     headers:tuple = ('seriesuid','coordX','coordY','coordZ','diameter_mm'), \
-    root_dir:str = '.'):
+    root_dir:str = '.',
+    **kwargs):
 
     max_diameter = locations[headers[4]].max()
     scans = generate_data_nested_dirs(root_dir)
@@ -155,7 +179,8 @@ def generate_cubes( \
                     scan, 
                     zyx_coords, 
                     max_diameter, 
-                    target_size),
+                    target_size,
+                    **kwargs),
                 3)
             nodule += 1
             yield cube, 1
@@ -172,6 +197,7 @@ def generate_cubes( \
     while nodule - no_nodule > 0:
         scan = scan_from_file(next(clean_scans))
         no_nodule += 1
+        
         # This line gets a random cube from the scan, then adds a dimension.
         cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter), 3)
         yield cube, 0
@@ -179,11 +205,12 @@ def generate_cubes( \
 def generate_cube_batch(
     locations:pd.DataFrame, \
     target_size:tuple, \
-    headers:tuple = ('seriesuid','coordX','coordY','coordZ','diameter_mm'), \
-    root_dir:str = '.', \
-    batch_size:int = 8):
+    # headers:tuple = ('seriesuid','coordX','coordY','coordZ','diameter_mm'), \
+    # root_dir:str = '.', \
+    batch_size:int = 8,
+    **kwargs):
 
-    cubes = generate_cubes(locations, target_size, headers, root_dir)
+    cubes = generate_cubes(locations, target_size, **kwargs)
 
     batch_list = []
     y_list=[]
