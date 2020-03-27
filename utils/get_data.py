@@ -36,11 +36,19 @@ def infinite_looper(iterable):
 def scan_from_file(filename:str):
     image = ReadImage(filename)
     
+    # get array and metadata to pass on
     array = GetArrayFromImage(image)
     spacing = image.GetSpacing()[::-1]
     origin = image.GetOrigin()[::-1]
+    
+    # Normalize Array
+    array_min = int(np.amin(array))
+    array_max = int(np.amax(array))
+    array_range = array_max - array_min
+    normalized_array = (array - array_min) / array_range
 
-    return array, spacing, origin, filename
+    # return array and metadata
+    return normalized_array, spacing, origin, filename
 
 def generate_data_same_dir(dirname:str='.') -> tuple:
     '''
