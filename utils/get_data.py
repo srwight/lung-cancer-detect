@@ -1,5 +1,6 @@
 '''
-This module provides generators to generate arrays for CT scans in directories
+This module provides generators to generate arrays for CT scans in directories,
+as well as generators to collect cubes of data from the arrays.
 '''
 from SimpleITK import ReadImage, GetArrayFromImage, sitkFloat32, sitkInt16
 from scipy import ndimage
