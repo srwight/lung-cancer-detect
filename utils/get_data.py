@@ -218,8 +218,6 @@ def generate_cube_batch(
         batch_list = []
         y_list = []
 
-# def generate_false_data(locations = pd.DataFrame):
-
 @nested_dirs
 def list_dir(dirname='.'):
     yield dirname
