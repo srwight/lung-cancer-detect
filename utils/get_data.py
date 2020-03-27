@@ -15,6 +15,18 @@ def infinite_loop(genfunc):
                 yield item
     return looped_generator
 
+def nested_dirs(genfunc):
+    def nested_func(dirname, *args, **kwargs):
+        directories = filter(lambda x: os.path.isdir(f'{dirname}/{x}'), os.listdir(dirname))
+        for directory in directories:
+            mygen = nested_func(f'{dirname}/{directory}', *args, **kwargs)
+            for item in mygen:
+                yield item
+        mygen = genfunc(dirname, *args, **kwargs)
+        for item in mygen:
+            yield item
+    return nested_func
+
 def infinite_looper(iterable):
     while True:
         for item in iterable:
@@ -47,27 +59,28 @@ def generate_data_same_dir(dirname:str='.') -> tuple:
         filename
     '''
     files=filter(lambda x: x[-3:] == 'mhd', os.listdir(dirname))
+    print('I got in.')
     for filename in files:
         yield scan_from_file(f'{dirname}/{filename}')
 
-def generate_data_nested_dirs(rootdir:str='.') -> np.array:
-    '''
-    This generator collects scans from a directory tree and yields, in turn, a 
-    numpy array of each scan along with its spacing scale in mm between voxels.
+generate_data_nested_dirs = nested_dirs(generate_data_same_dir)
+# def generate_data_nested_dirs(rootdir:str='.') -> np.array:
+#     '''
+#     This generator collects scans from a directory tree and yields, in turn, a 
+#     numpy array of each scan along with its spacing scale in mm between voxels.
 
-    Arguments:
-    ==========
-    dirname:str     - The name of the root directory you want to generate from.
-    '''
-    directories=filter(lambda x: os.path.isdir(x), os.listdir(rootdir))
-    for directory in directories:
-        mygen = generate_data_nested_dirs(f'{rootdir}/{directory}')
-        for item in mygen:
-            yield item
-    mygen = generate_data_same_dir(rootdir)
-    for item in mygen:
-        yield item
-
+#     Arguments:
+#     ==========
+#     dirname:str     - The name of the root directory you want to generate from.
+#     '''
+#     directories=filter(lambda x: os.path.isdir(x), os.listdir(rootdir))
+#     for directory in directories:
+#         mygen = generate_data_nested_dirs(f'{rootdir}/{directory}')
+#         for item in mygen:
+#             yield item
+#     mygen = generate_data_same_dir(rootdir)
+#     for item in mygen:
+#         yield item
 
 def get_cube_at_point(
     scan,
@@ -184,24 +197,26 @@ def generate_cubes( \
                     **kwargs),
                 3)
             nodule += 1
-            yield cube, 1
+            print("[line 187]",f"nodule: {nodule}", f"no_nodule: {no_nodule}", "================", sep="\n")
+            yield cube, np.array([0,1])
             cancer = True
         if not cancer:
             clean_files.append(path)
             while nodule - no_nodule > 0:
                 cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter),3)
                 no_nodule += 1
-                yield cube, 0
+                print("[line 195]",f"nodule: {nodule}", f"no_nodule: {no_nodule}", "================", sep="\n")
+                yield cube, np.array([1,0])
     if not clean_files:
         warnings.warn('There are no clean scans. Data is not balanced.')
     clean_scans = infinite_looper(clean_files)
     while nodule - no_nodule > 0:
         scan = scan_from_file(next(clean_scans))
         no_nodule += 1
-        
         # This line gets a random cube from the scan, then adds a dimension.
         cube = np.expand_dims(get_random_cube(scan, target_size, max_diameter), 3)
-        yield cube, 0
+        print("[line 205]",f"nodule: {nodule}", f"no_nodule: {no_nodule}", "================", sep="\n")
+        yield cube, np.array([1,0])
 
 def generate_cube_batch(
     locations:pd.DataFrame, \
@@ -224,16 +239,25 @@ def generate_cube_batch(
         batch_list = []
         y_list = []
 
+# def generate_false_data(locations = pd.DataFrame):
+
+@nested_dirs
+def list_dir(dirname='.'):
+    yield dirname
+
 if __name__ == "__main__":
-    mygen = generate_data_nested_dirs('.')
-    scan = next(mygen)
-    cube = get_cube_at_point(scan,(5,5,5),2,(24,64,64))
-    print(f'\nShape: {scan[0].shape}')
-    print(f'\nSpacing: {scan[1]}')
-    print(f'\nOrigin: {scan[2]}')
-    print(f'\nFilename: {scan[3]}')
-    print(f'\nCube at 5,5,5 with 2mm edge length:\n{cube}')
-    print(f'\n\nCube Shape: {cube.shape}')
-    cube = get_random_cube(scan, (24,64,64),5)
-    print(f'\nRandome cube with 5mm edge length:\n{cube}')
-    print(f'\n\nCube Shape: {cube.shape}')
+    # mygen = generate_data_nested_dirs('.')
+    # scan = next(mygen)
+    # cube = get_cube_at_point(scan,(5,5,5),2,(24,64,64))
+    # print(f'\nShape: {scan[0].shape}')
+    # print(f'\nSpacing: {scan[1]}')
+    # print(f'\nOrigin: {scan[2]}')
+    # print(f'\nFilename: {scan[3]}')
+    # print(f'\nCube at 5,5,5 with 2mm edge length:\n{cube}')
+    # print(f'\n\nCube Shape: {cube.shape}')
+    # cube = get_random_cube(scan, (24,64,64),5)
+    # print(f'\nRandome cube with 5mm edge length:\n{cube}')
+    # print(f'\n\nCube Shape: {cube.shape}')
+    dirs = list_dir('./data')
+    for item in dirs:
+        print(item)
