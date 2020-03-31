@@ -248,11 +248,14 @@ def generate_cube_batch(
 
     batch_list = []
     y_list=[]
-    while len(batch_list) < batch_size:
-        cube = next(cubes)
-        batch_list.append(cube[0])
-        y_list.append(cube[1])
-    yield np.stack(batch_list), np.stack(y_list)
+    for first_cube in cubes:
+        batch_list.append(first_cube[0])
+        y_list.append(first_cube[1])
+        while len(batch_list) < batch_size:
+            cube = next(cubes)
+            batch_list.append(cube[0])
+            y_list.append(cube[1])
+        yield np.stack(batch_list), np.stack(y_list)
     batch_list = []
     y_list = []
 
