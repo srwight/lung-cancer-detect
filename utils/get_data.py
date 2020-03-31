@@ -132,7 +132,6 @@ def get_cube_at_point(
     source, zyx_spacing, zyx_origin = scan[0:3]
     # Pad source so that it we have at least 10 extra mm on each side
     padding = int(mm_sidelength * 2 / min(zyx_spacing) + 5 / min(zyx_spacing))
-    print("Padding: ", padding)
     source = np.pad(source, padding,'edge')
 
     if offset > 1:
@@ -147,14 +146,11 @@ def get_cube_at_point(
 
     # sidelength in voxels of the cube I'm looking for, multiplied by 2 to prepare for augmentation.
     zyx_r_edges = tuple(int(mm_sidelength * 2 / spacing) + 1 for spacing in zyx_spacing)
-    print("Edges: ", zyx_r_edges)
 
     # sets the top left back corner of the cube
     zyx_corner = tuple(coord - edge + padding for coord, edge in zip(zyx_vox_coords, zyx_r_edges))
-    print("Corner: ", zyx_corner)
 
     aug_array = get_r_prism(source, zyx_r_edges, zyx_corner)
-    print("Shape: ", aug_array.shape)
 
     pre_aug_size = target_size * 4
 
@@ -252,14 +248,13 @@ def generate_cube_batch(
 
     batch_list = []
     y_list=[]
-    for cube in cubes:
-        if len(batch_list) < batch_size:
-            batch_list.append(cube[0])
-            y_list.append(cube[1])
-            continue
-        yield np.stack(batch_list), np.stack(y_list)
-        batch_list = []
-        y_list = []
+    while len(batch_list) < batch_size:
+        cube = next(cubes)
+        batch_list.append(cube[0])
+        y_list.append(cube[1])
+    yield np.stack(batch_list), np.stack(y_list)
+    batch_list = []
+    y_list = []
 
 if __name__ == "__main__":
     # mygen = generate_data_nested_dirs('.')
