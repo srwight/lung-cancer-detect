@@ -252,12 +252,15 @@ def generate_cube_batch(
         batch_list.append(first_cube[0])
         y_list.append(first_cube[1])
         while len(batch_list) < batch_size:
-            cube = next(cubes)
+            try:
+                cube = next(cubes)
+            except StopIteration:
+                break
             batch_list.append(cube[0])
             y_list.append(cube[1])
         yield np.stack(batch_list), np.stack(y_list)
-    batch_list = []
-    y_list = []
+        batch_list = []
+        y_list = []
 
 if __name__ == "__main__":
     # mygen = generate_data_nested_dirs('.')
