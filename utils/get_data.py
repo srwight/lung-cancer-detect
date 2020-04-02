@@ -79,7 +79,16 @@ def rotate_prism(arr_in:np.array, rotate:float, axes:list) -> np.array:
         rotation_axes = tuple(a for a in [0,1,2] if a != axis )
         out_array = ndimage.rotate(arr_in, degrees, rotation_axes, reshape=False)
     return out_array
-    
+
+def normalize_array(array_in:np.array) -> np.array:
+
+    array_min = int(np.amin(array_in))
+    array_max = int(np.amax(array_in))
+    array_range = array_max - array_min
+    normalized_array = (array_in - array_min) / array_range
+
+    return normalized_array
+
 def scan_from_file(filename:str):
     image = ReadImage(filename)
     
@@ -89,10 +98,7 @@ def scan_from_file(filename:str):
     origin = image.GetOrigin()[::-1]
     
     # Normalize Array
-    array_min = int(np.amin(array))
-    array_max = int(np.amax(array))
-    array_range = array_max - array_min
-    normalized_array = (array - array_min) / array_range
+    normalized_array = normalize_array(array)
 
     # return array and metadata
     return normalized_array, spacing, origin, filename
@@ -261,7 +267,7 @@ def generate_cube_batch(
                 break
             batch_list.append(cube[0])
             y_list.append(cube[1])
-                                                                                                                                                                                                                                                                                                                            yield np.stack(batch_list), np.stack(y_list)
+        yield np.stack(batch_list), np.stack(y_list)
         batch_list = []
         y_list = []
 
