@@ -33,9 +33,9 @@ def infinite_looper(iterable):
         for item in iterable:
             yield item
 
-def get_vox_coords(mm_coords:tuple, mm_per_vox:tuple, mm_origin:tuple) -> tuple:
+def get_vox_coords(mm_coords:tuple, mm_per_vox:tuple, mm_origin:tuple, padding:int=0) -> tuple:
     vox_coords = tuple(
-        int((coord - origin) / spacing) \
+        int((coord - origin) / spacing) + padding \
             for \
                 coord, \
                 spacing, \
@@ -76,11 +76,10 @@ def rotate_prism(arr_in:np.array, rotate:float, axes:list) -> np.array:
         degrees = rotate * random() * (randint(0,1) * 2 - 1)
         if axis not in (0,1,2):
             raise IndexError('Invalid Axis')
-        rotation_axes = tuple(filter (lambda a: a != axis, [0,1,2]))
-        out_array = ndimage.rotate(arr_in, degrees, rotation_axes)
+        rotation_axes = tuple(a for a in [0,1,2] if a != axis )
+        out_array = ndimage.rotate(arr_in, degrees, rotation_axes, reshape=False)
     return out_array
     
-
 def scan_from_file(filename:str):
     image = ReadImage(filename)
     
@@ -102,11 +101,9 @@ def generate_data_same_dir(dirname:str='.') -> tuple:
     '''
     This generator collects scans from a single directory and yields, in turn, a 
     numpy array of each scan along with its spacing scale in mm between voxels.
-
     Arguments:
     ==========
     dirname:str     - The name of the directory you want to generate from.
-
     Yields:
     ========
     tuple of data about a scan in this order:
@@ -129,41 +126,47 @@ def get_cube_at_point(
     rotate:float = 0,
     axes:list = [],
     offset:float = 0) -> np.array:
+    
     source, zyx_spacing, zyx_origin = scan[0:3]
-    # Pad source so that it we have at least 10 extra mm on each side
-    padding = int(mm_sidelength * 2 / min(zyx_spacing) + 5 / min(zyx_spacing))
-    source = np.pad(source, padding,'edge')
+    # Pad source so that it we have at least 2 sidelengths + 5mm
+    padding = int((mm_sidelength * 2 + 5) / min(zyx_spacing))
+    source = np.pad(source, padding, 'edge')
 
     if offset > 1:
         raise(IndexError, "offset must be between 0.0 and 1.0")
 
     if offset > 0.5:
         warnings.warn('offset > 0.5 may result in target being outside of sample')
+
+    # if offset:
+    #     placement = 1 + offset * randint(-1,1) * random()
+    # else:
+    #     placement = 1
     
     # Convert mm coordinates to voxel coordinates
-    zyx_vox_coords = get_vox_coords(zyx_coords, zyx_spacing, zyx_origin)
-    zyx_vox_coords = tuple(coord + padding for coord in zyx_vox_coords)
+    zyx_vox_coords = get_vox_coords(zyx_coords, zyx_spacing, zyx_origin, padding)
 
     # sidelength in voxels of the cube I'm looking for, multiplied by 2 to prepare for augmentation.
-    zyx_r_edges = tuple(int(mm_sidelength * 2 / spacing) + 1 for spacing in zyx_spacing)
+    zyx_r_edges = tuple(int(mm_sidelength / spacing * 2 + 1) for spacing in zyx_spacing)
 
     # sets the top left back corner of the cube
-    zyx_corner = tuple(coord - edge + padding for coord, edge in zip(zyx_vox_coords, zyx_r_edges))
+    zyx_corner = tuple(coord - edge for coord, edge in zip(zyx_vox_coords, zyx_r_edges))
 
-    aug_array = get_r_prism(source, zyx_r_edges, zyx_corner)
+    zyx_sidelen = tuple(radius * 2 for radius in zyx_r_edges)
+
+    aug_array = get_r_prism(source, zyx_sidelen, zyx_corner)
 
     pre_aug_size = target_size * 4
 
-    # tuple used to zoom the array to the target size * 4 for augmentation
+    # When we zoom the cube to the target size, we'll use these values to do so.
     scaler = tuple(pre_aug_size / current for current in aug_array.shape)
 
-    # Zooms the cube using the scaler.
+    # Zooms the cube to the target size.
     aug_array = ndimage.zoom(aug_array, scaler)
-
+    
     if rotate:
         aug_array = rotate_prism(aug_array, rotate, axes)
-
-    newside = target_size
+    
     offset_vox = int(target_size * offset)
     zyx_corner = tuple(
         int(0.375 * edge + offset_vox * random() * (randint(0,2) - 1)) \
@@ -248,9 +251,9 @@ def generate_cube_batch(
 
     batch_list = []
     y_list=[]
-    for first_cube in cubes:
-        batch_list.append(first_cube[0])
-        y_list.append(first_cube[1])
+    for cube in cubes:
+        batch_list.append(cube[0])
+        y_list.append(cube[1])
         while len(batch_list) < batch_size:
             try:
                 cube = next(cubes)
@@ -258,9 +261,13 @@ def generate_cube_batch(
                 break
             batch_list.append(cube[0])
             y_list.append(cube[1])
-        yield np.stack(batch_list), np.stack(y_list)
+                                                                                                                                                                                                                                                                                                                            yield np.stack(batch_list), np.stack(y_list)
         batch_list = []
         y_list = []
+
+@nested_dirs
+def list_dir(dirname='.'):
+    yield dirname
 
 if __name__ == "__main__":
     # mygen = generate_data_nested_dirs('.')
@@ -275,9 +282,6 @@ if __name__ == "__main__":
     # cube = get_random_cube(scan, (24,64,64)[0],5)
     # print(f'\nRandome cube with 5mm edge length:\n{cube}')
     # print(f'\n\nCube Shape: {cube.shape}')
-    # dirs = list_dir('./data')
-    # for item in dirs:
-    #     print(item)
-    test = np.ones((6,6,6))
-    prism = get_r_prism(test, (4,3,4), (2,2,2))
-    print(prism)
+    dirs = list_dir('./data')
+    for item in dirs:
+        print(item)
