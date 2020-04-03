@@ -217,17 +217,25 @@ def generate_cubes( \
         cancer = False
         df_scan = locations.loc[locations[headers[0]] == filename]
         for annotation in df_scan.iterrows():
-            zyx_coords = tuple(annotation[1][coord] for coord in headers[3:0:-1])
-            cube = np.expand_dims(
-                get_cube_at_point(
-                    scan, 
-                    zyx_coords, 
-                    max_diameter, 
-                    target_size,
-                    **kwargs),
-                3)
-            nodule += 1
-            yield cube, np.array([0,1])
+            cubes_needed = 1
+            num_cubes = 0
+            if 'rotate' in kwargs:
+                cubes_needed += 2
+            if 'offset' in kwargs:
+                cubes_needed += 1
+            while num_cubes < cubes_needed:
+                zyx_coords = tuple(annotation[1][coord] for coord in headers[3:0:-1])
+                cube = np.expand_dims(
+                    get_cube_at_point(
+                        scan, 
+                        zyx_coords, 
+                        max_diameter, 
+                        target_size,
+                        **kwargs),
+                    3)
+                nodule += 1
+                num_cubes += 1
+                yield cube, np.array([0,1])
             cancer = True
         if not cancer:
             clean_files.append(path)
