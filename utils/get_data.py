@@ -138,8 +138,8 @@ def get_cube_at_point(
     padding = int((mm_sidelength * 2 + 5) / min(zyx_spacing))
     source = np.pad(source, padding, 'edge')
 
-    if offset > 1:
-        raise(IndexError, "offset must be between 0.0 and 1.0")
+    if offset > 1 or offset < 0:
+        raise IndexError("offset must be between 0.0 and 1.0")
 
     if offset > 0.5:
         warnings.warn('offset > 0.5 may result in target being outside of sample')
