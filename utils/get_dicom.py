@@ -1,12 +1,12 @@
 from SimpleITK import ImageSeriesReader, GetArrayFromImage
 import numpy as np
 import os, magic
-from .get_data import nested_dirs, normalize_array
+from .decorators import nested_dirs
+from .arrays import normalize_array
 
 def check_dir_for_dicom(directory:str='.') -> bool:
-    dir_listing = list(filter(lambda x: not os.path.isdir(x), os.listdir(directory)))
-    # print(*[dirs for dirs in dir_listing], sep='\n')
-    dir_check = (magic.from_file(f'{directory}/{filename}') == 'DICOM medical imaging data' for filename in dir_listing)
+    dir_listing = (f'{directory}/{filename}' for filename in os.listdir(directory) if not os.path.isdir(f'{directory}/{filename}'))
+    dir_check = (magic.from_file(filename) == 'DICOM medical imaging data' for filename in dir_listing)
     return any(dir_check)
 
 def get_series_from_directory(directory:str = '.') -> tuple:
@@ -31,7 +31,6 @@ def generate_series_from_directories(rootdir:str = '.'):
     dirlist = (f'{rootdir}/{x}' for x in dirlist)
     dirs = filter(check_dir_for_dicom, dirlist)
     for directory in dirs:
-        print(directory)
         yield get_series_from_directory(f'{directory}')
 
 if __name__ == "__main__":

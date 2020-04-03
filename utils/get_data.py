@@ -7,31 +7,9 @@ from scipy import ndimage
 import numpy as np, pandas as pd
 import os, warnings
 from random import randint, random
-
-def infinite_loop(genfunc):
-    def looped_generator(*args, **kwargs):
-        while True:
-            generator = genfunc(*args, **kwargs)
-            for item in generator:
-                yield item
-    return looped_generator
-
-def nested_dirs(genfunc):
-    def nested_func(dirname, *args, **kwargs):
-        directories = filter(lambda x: os.path.isdir(f'{dirname}/{x}'), os.listdir(dirname))
-        for directory in directories:
-            mygen = nested_func(f'{dirname}/{directory}', *args, **kwargs)
-            for item in mygen:
-                yield item
-        mygen = genfunc(dirname, *args, **kwargs)
-        for item in mygen:
-            yield item
-    return nested_func
-
-def infinite_looper(iterable):
-    while True:
-        for item in iterable:
-            yield item
+from utils.get_dicom import generate_series_from_directories
+from .decorators import infinite_loop, nested_dirs, infinite_looper
+from .arrays import normalize_array
 
 def get_vox_coords(mm_coords:tuple, mm_per_vox:tuple, mm_origin:tuple, padding:int=0) -> tuple:
     vox_coords = tuple(
@@ -80,15 +58,6 @@ def rotate_prism(arr_in:np.array, rotate:float, axes:list) -> np.array:
         out_array = ndimage.rotate(arr_in, degrees, rotation_axes, reshape=False)
     return out_array
 
-def normalize_array(array_in:np.array) -> np.array:
-
-    array_min = int(np.amin(array_in))
-    array_max = int(np.amax(array_in))
-    array_range = array_max - array_min
-    normalized_array = (array_in - array_min) / array_range
-
-    return normalized_array
-
 def scan_from_file(filename:str):
     image = ReadImage(filename)
     
@@ -131,7 +100,8 @@ def get_cube_at_point(
     target_size,
     rotate:float = 0,
     axes:list = [],
-    offset:float = 0) -> np.array:
+    offset:float = 0,
+    **kwargs) -> np.array:
     
     source, zyx_spacing, zyx_origin = scan[0:3]
     # Pad source so that it we have at least 2 sidelengths + 5mm
@@ -296,6 +266,7 @@ if __name__ == "__main__":
     # cube = get_random_cube(scan, (24,64,64)[0],5)
     # print(f'\nRandome cube with 5mm edge length:\n{cube}')
     # print(f'\n\nCube Shape: {cube.shape}')
-    dirs = list_dir('./data')
-    for item in dirs:
-        print(item)
+    # dirs = list_dir('./data')
+    # for item in dirs:
+    #     print(item)
+    pass
