@@ -1,0 +1,17 @@
+<div id="login-view" class="jumbotron">
+  <div id="fields" class="flex-center" style="margin-top: 10vh;">
+    <h1 class="white-title">Log In</h1>
+    <br>
+    <br>
+    User Name
+    <br>
+    <input type="text" placeholder="Username" class="form-control col-3" name="username" [(ngModel)]="username">
+    Password
+    <br>
+    <input type="password" placeholder="Username" class="form-control col-3" name="password" [(ngModel)]="password">
+    <br>
+    <button (click)=checkLogin() class="btn btn-success">
+      Login
+    </button>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+#scan {
+  justify-content: center;
+  padding-left: 40%;
+}
+
+input {
+  margin-left: 1%;
+}
+
+button {
+  width: 10%;
+}
+
+#diagnosis {
+  width: 60%;
+  margin-left: 1.2%;
+}
+
+#nextSteps {
+  width: 60%;
+}
+
+

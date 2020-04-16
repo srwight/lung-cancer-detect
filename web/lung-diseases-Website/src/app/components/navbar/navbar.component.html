@@ -1,0 +1,24 @@
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+  <a class="navbar-brand" href="#">
+      <img src="assets/images/revature-logo.png" alt="Revature Logo" width="64px">
+      lung-diseases
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/home">Home<span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+    <div *ngIf="false"  class="form-inline my-2 my-lg-0">
+      <a id="currentTime" class="form-control" href="/register">Register</a>
+    </div>
+    <div class="form-inline my-2 my-lg-0">
+      <a *ngIf="!loginService.isUserLoggedIn()" id="currentTime" class="form-control" routerLink="/login">Login</a>
+      <a *ngIf="loginService.isUserLoggedIn()" id="currentTime" class="form-control" routerLink="/logout">Logout</a>
+    </div>
+  </div>
+</nav>

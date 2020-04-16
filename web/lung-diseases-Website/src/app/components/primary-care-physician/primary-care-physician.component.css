@@ -1,0 +1,31 @@
+#scan {
+  justify-content: center;
+  padding-left: 40%;
+}
+
+#ol_top_hypers li{
+  display: inline;
+}
+
+input {
+  margin-left: 1%;
+}
+
+button {
+  width: 10%;
+}
+
+#diagnosis {
+  width: 60%;
+  margin-left: 1.2%;
+}
+
+#nextSteps {
+  width: 60%;
+}
+
+#notes {
+  width: 80%;
+  height: 80%;
+  min-height: 500px;
+}

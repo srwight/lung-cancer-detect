@@ -1,0 +1,35 @@
+<div class="jumbotron">
+  <br>
+  <br>
+  <button mat-raised-button class="btn btn-primary" (click)="openDialog()">
+    Add User
+  </button>
+  <br>
+  <br>
+  <igx-tabs>
+    <igx-tabs-group label="All Users">
+      <br>
+      <app-datatables *ngIf="users !== undefined" [user]="users"></app-datatables>
+    </igx-tabs-group>
+    <igx-tabs-group label="Oncologist List">
+      <br>
+      <app-datatables *ngIf="users !== undefined" [user]="filterUserListByRole('ONCOLOGIST')"></app-datatables>
+    </igx-tabs-group>
+    <igx-tabs-group label="Primary Doctors">
+      <br>
+      <app-datatables *ngIf="users !== undefined" [user]="filterUserListByRole('PRIMARY')"></app-datatables>
+    </igx-tabs-group>
+    <igx-tabs-group label="Receptionists">
+      <br>
+      <app-datatables *ngIf="users !== undefined" [user]="filterUserListByRole('RECEPTIONIST')"></app-datatables>
+    </igx-tabs-group>
+    <igx-tabs-group label="Patients">
+      <br>
+      <app-datatables *ngIf="users !== undefined" [user]="filterUserListByRole('PATIENT')"></app-datatables>
+    </igx-tabs-group>
+    <igx-tabs-group *ngIf="false" label="Admins">
+      <br>
+      <app-datatables *ngIf="users !== undefined" [user]="filterUserListByRole('ADMIN')"></app-datatables>
+    </igx-tabs-group>
+  </igx-tabs>
+</div>

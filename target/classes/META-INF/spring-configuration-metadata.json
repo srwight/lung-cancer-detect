@@ -1,0 +1,27 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.revature.jwt.JWTConfig",
+      "name": "application.jwt",
+      "type": "com.revature.jwt.JWTConfig"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.revature.jwt.JWTConfig",
+      "name": "application.jwt.secret-key",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.revature.jwt.JWTConfig",
+      "name": "application.jwt.token-expiration-after-days",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.revature.jwt.JWTConfig",
+      "name": "application.jwt.token-prefix",
+      "type": "java.lang.String"
+    }
+  ]
+}

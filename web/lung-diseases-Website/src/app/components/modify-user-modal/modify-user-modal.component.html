@@ -1,0 +1,40 @@
+<h3 mat-dialog-title>Modify User Details</h3>
+<div mat-dialog-content>
+  <p>Please provide the user details here.</p>
+  <br>
+  Home Phone Number
+  <br>
+  <input type="number" placeholder="Home Phone" class="form-control col-5" name="homePhone" [(ngModel)]="user.homePhone">
+  <br>
+  <br>
+  Cell Phone Number
+  <br>
+  <input type="number" placeholder="Cell Phone" class="form-control col-5" name="cellPhone" [(ngModel)]="user.cellPhone">
+  <br>
+  <br>
+  Work Phone Number
+  <br>
+  <input type="number" placeholder="Work Phone" class="form-control col-5" name="workPhone" [(ngModel)]="user.workPhone">
+  <br>
+  <br>
+  Email
+  <br>
+  <input type="text" placeholder="Email Address" class="form-control col-5" name="email" [(ngModel)]="user.email">
+  <br>
+  <br>
+  Role
+  <br>
+  <mat-form-field>
+    <mat-label>Role</mat-label>
+    <mat-select [(value)]="user.role[0]">
+      <mat-option *ngFor="let role of roles" [value]="role.value">
+        {{role.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <br>
+</div>
+<div mat-dialog-actions>
+  <button type="button" class="btn btn-primary" (click)=saveUserDetails()>Save changes</button>
+  <button type="button" class="btn btn-warning"  (click)=onNoClick()>Close</button>
+</div>

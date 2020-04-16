@@ -1,0 +1,35 @@
+<div id="register-patient-view" class="jumbotron">
+  <div id="fields" class="flex-center" style="margin-top: 10vh;">
+    <h1 class="white-title">Register Patient</h1>
+    <br>
+    <br>
+    Patient First Name
+    <br>
+    <input type="text" placeholder="First Name" class="form-control col-3" name="firstName" [(ngModel)]="firstName">
+    <br>
+    <br>
+    Patient Last Name
+    <br>
+    <input type="text" placeholder="Last Name" class="form-control col-3" name="lastName" [(ngModel)]="LastName">
+    <br>
+    <br>
+    Home Phone Number
+    <br>
+    <input type="text" placeholder="Home Phone" class="form-control col-3" name="homePhone" [(ngModel)]="homePhone">
+    <br>
+    <br>
+    Cell Phone Number
+    <br>
+    <input type="text" placeholder="Cell Phone" class="form-control col-3" name="cellPhone" [(ngModel)]="cellPhone">
+    <br>
+    <br>
+    Work Phone Number
+    <br>
+    <input type="text" placeholder="Work Phone" class="form-control col-3" name="workPhone" [(ngModel)]="workPhone">
+    <br>
+    <button (click)=checkPatientIn() class="btn btn-success">
+      Continue
+    </button>
+  </div>
+</div>
+

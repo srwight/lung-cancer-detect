@@ -1,0 +1,51 @@
+<div class="jumbotron">
+  <div class="Flexbox">
+    <ngb-carousel id="scan" #carousel [interval]="framesPerSecond !== 0 ? 1000 - framesPerSecond + 1 : 0" [showNavigationArrows]="showNavigationArrows" [showNavigationIndicators]="showNavigationIndicators">
+      <ng-template ngbSlide *ngFor="let pic of pictures">
+        <div class="picsum-img-wrapper">
+          <img src="assets/images/imagetest/{{pic}}.png" alt="{{pic}}">
+        </div>
+      </ng-template>
+    </ngb-carousel>
+    <br>
+    <span>Speed: {{(framesPerSecond) / 100}}</span>
+    <ejs-slider class="form-control" min="0" max="1000" step="100" [(value)]="framesPerSecond" type="MinRange"></ejs-slider>
+    <br>
+    <br>
+    <span>
+      Results
+      <br>
+      <p>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#slides" aria-expanded="false" aria-controls="collapseExample">
+          Show Slides
+        </button>
+      </p>
+      <div class="collapse" id="slides">
+        <div class="card card-body">
+          <ol id="ol_top_hypers">
+            <li *ngFor="let pic of pictures"><img src="assets/images/imagetest/{{pic}}.png"/></li>
+          </ol>
+        </div>
+      </div>
+      <br>
+      <Span>
+        Nodule detected at ({{results.nodule.x}}, {{results.nodule.y}}, {{results.nodule.z}}) with ({{results.confidence}}%) confidence
+      </Span>
+    </span>
+    <br><br><br>
+    <div>
+      <span>Diagnosis</span>
+      <input id="diagnosis" type="text">
+    </div><br>
+    <div>
+      <span>Next Steps</span>
+      <input id="nextSteps" type="text">
+    </div><br>
+    <div>
+      Notes
+      <br>
+      <textarea id="notes" aria-multiline="true"></textarea>
+      <button class="form-control">Save Changes</button>
+    </div>
+  </div>
+</div>

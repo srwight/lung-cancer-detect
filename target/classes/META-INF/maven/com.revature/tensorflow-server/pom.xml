@@ -28,6 +28,14 @@
 		<version>1.5.9.RELEASE</version>
 	</parent>
 
+	<repositories>
+		<repository>
+			<id>www.dcm4che.org</id>
+			<name>dcm4che Repository</name>
+			<url>http://www.dcm4che.org/maven2</url>
+		</repository>
+	</repositories>
+	
 	<dependencies>
 		<!-- Spring Boot Starters are a set of convenient dependency descriptors 
 			that you can include in your application. You get a one-stop-shop for all 
@@ -53,11 +61,8 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc7</artifactId>
-			<version>11.2.0</version>
-		</dependency>
+
+
 
 <!-- Dev tools is simply a tool for development 
 that allows your spring boot application to reload
@@ -82,6 +87,27 @@ yourself. -->
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
  
+ 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+ 
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+ 
+ 		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+ 
+ 		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>28.1-jre</version>
+		</dependency>
+ 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -89,13 +115,104 @@ yourself. -->
 			<scope>test</scope>
 		</dependency>
 		
+		<!-- OJDBC 7 LOCAL REPO -->
 		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc7</artifactId>
+			<version>11.2.0</version>
+		</dependency>
+		
+		<dependency>      
+    		<groupId>org.deeplearning4j</groupId>      
+    		<artifactId>deeplearning4j-core</artifactId>
+    		<version>1.0.0-beta2</version>    
+  		</dependency>     
+  		<dependency>      
+    		<groupId>org.deeplearning4j</groupId>      
+    		<artifactId>deeplearning4j-modelimport</artifactId>      
+    		<version>1.0.0-beta2</version>    
+  		</dependency>                       
+  		<dependency>      
+    		<groupId>org.nd4j</groupId>      
+    		<artifactId>nd4j-native-platform</artifactId>
+    		<version>1.0.0-beta2</version>    
+  		</dependency>
+		
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-api</artifactId>
+		    <version>0.11.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-impl</artifactId>
+		    <version>0.11.1</version>
+		    <scope>runtime</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+		    <version>0.11.1</version>
+		    <scope>runtime</scope>
+		</dependency>
+		
+		<!-- Uncomment this next dependency if you are using JDK 10 or earlier and you also want to use 
+		     RSASSA-PSS (PS256, PS384, PS512) algorithms.  JDK 11 or later does not require it for those algorithms: -->
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcprov-jdk15on</artifactId>
+		    <version>1.60</version>
+		    <scope>runtime</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.itk.simple/simpleitk -->
+<!-- 		<dependency>
+		    <groupId>org.itk.simple</groupId>
+		    <artifactId>simpleitk</artifactId>
+		    <version>0.9.0</version>
+		    <type>pom</type>
+		</dependency> -->
+
+		
+<!-- 		<dependency>
 			<groupId>org.tensorflow</groupId>
 			<artifactId>tensorflow</artifactId>
 			<version>1.5.0</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.dcm4che</groupId>
+		    <artifactId>dcm4che-imageio</artifactId>
+		    <version>3.3.7</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.dcm4che</groupId>
+		    <artifactId>dcm4che-imageio-rle</artifactId>
+		    <version>3.3.7</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.sun.media</groupId>
+		    <artifactId>jai_imageio</artifactId>
+		    <version>1.2-pre-dr-b04</version>
+		    <scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.dcm4che.tool</groupId>
+			<artifactId>dcm4che-tool-common</artifactId>
+			<version>3.3.7</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-log4j12</artifactId>
 		</dependency>
 	</dependencies>
-  
-  
-  
 </project>

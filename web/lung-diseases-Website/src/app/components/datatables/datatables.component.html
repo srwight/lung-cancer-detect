@@ -1,0 +1,62 @@
+<div>
+  <!--
+    <nav aria-label="..." class="flex">
+      <ul class="pagination">
+        <li [class]="paginationPage > 1 ? 'page-item' : 'page-item disabled'">
+          <button (click)="pageChange(paginationPage - 1)" class="page-link">Previous</button>
+        </li>
+        <li *ngFor="let i of getPageinationLength()" [class]="i === paginationPage ? 'page-item active' : 'page-item'">
+          <button (click)="pageChange(i)" class="page-link">{{i}}</button>
+        </li>
+        <li [class]="paginationPage < paginationLength ? 'page-item' : 'page-item disabled'">
+          <button (click)="pageChange(paginationPage + 1)" class="page-link">Next</button>
+        </li>
+      </ul>
+    </nav>
+  -->
+    <div>
+      Filter by Name
+      <input type="text" [(ngModel)]="filterByName" value="Filter">
+    </div><br>
+
+    <div id="table-wrapper">
+      <div id="table-scroll">
+        <table datatable class="row-border hover table table-striped">
+          <thead class="thead-secondary">
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>email</th>
+              <th>Home Phone</th>
+              <th>Cell Phone</th>
+              <th>Work Phone</th>
+              <th>Roles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of user | filterByName : [filterByName]">
+              <td>{{u.firstName}}</td>
+              <td>{{u.lastName}}</td>
+              <td>{{u.email}}</td>
+              <td>
+                <div *ngIf="u.homePhone !== undefined || u.homePhone !== 0">{{u.homePhone}}</div>
+              </td>
+              <td>
+                <div *ngIf="u.cellPhone !== undefined || u.cellPhone !== 0">{{u.cellPhone}}</div>
+              </td>
+              <td>
+                <div *ngIf="u.workPhone !== undefined || u.workPhone !== 0">{{u.workPhone}}</div>
+              </td>
+              <td>
+                <ul>
+                  <li *ngFor="let r of u.role">
+                    {{r}}
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

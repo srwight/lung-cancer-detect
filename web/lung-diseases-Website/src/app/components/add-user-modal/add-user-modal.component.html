@@ -1,0 +1,56 @@
+<h3 mat-dialog-title>Add New User</h3>
+<div mat-dialog-content>
+  <p>Please provide the user details here.</p>
+  <br>
+  <br>
+  First Name
+  <br>
+  <input type="text" placeholder="First Name" class="form-control col-5" name="firstName" [(ngModel)]="firstName">
+  <br>
+  <br>
+  Last Name
+  <br>
+  <input type="text" placeholder="Last Name" class="form-control col-5" name="lastName" [(ngModel)]="LastName">
+  <br>
+  <br>
+  Password
+  <br>
+  <input type="password" placeholder="Last Name" class="form-control col-5" name="password" [(ngModel)]="password">
+  <br>
+  <br>
+  Home Phone Number
+  <br>
+  <input type="number" placeholder="Home Phone" class="form-control col-5" name="homePhone" [(ngModel)]="homePhone">
+  <br>
+  <br>
+  Cell Phone Number
+  <br>
+  <input type="number" placeholder="Cell Phone" class="form-control col-5" name="cellPhone" [(ngModel)]="cellPhone">
+  <br>
+  <br>
+  Work Phone Number
+  <br>
+  <input type="number" placeholder="Work Phone" class="form-control col-5" name="workPhone" [(ngModel)]="workPhone">
+  <br>
+  <br>
+  Email
+  <br>
+  <input type="text" placeholder="Email Address" class="form-control col-5" name="email" [(ngModel)]="email">
+  <br>
+  <br>
+  Role
+  <br>
+  <mat-form-field>
+    <mat-label>Role</mat-label>
+    <mat-select [(value)]="selectedRole">
+      <mat-option *ngFor="let role of roles" [value]="role.value">
+        {{role.viewValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <br>
+</div>
+<div mat-dialog-actions>
+  <button type="button" class="btn btn-primary" (click)=saveNewUser()>Save changes</button>
+  <button type="button" class="btn btn-warning"  (click)=onNoClick()>Close</button>
+</div>
